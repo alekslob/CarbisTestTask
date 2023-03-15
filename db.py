@@ -5,12 +5,7 @@ class DBClient:
         self.connect = sqlite3.connect(dbname)
         self.cursor = self.connect.cursor()
     
-    def null_settings(self):
-        return {'url':None, 'key':None, 'language':None}
-    
-    def get_settings(self):
-        settings = self.null_settings()
-
+    def get_settings(self, settings):
         response = self.cursor.execute("select name from sqlite_master")
         if response.fetchone() is None: return settings
         # таблицы не существует

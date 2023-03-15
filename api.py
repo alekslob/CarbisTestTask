@@ -1,9 +1,13 @@
 from dadata import Dadata
 
 def get_adress(key:str, address:str, language:str)->list:
-    dadata = Dadata(key)
-    result = dadata.suggest("address", address, language=language)
-    return [r['unrestricted_value'] for r in result]
+    try:
+        dadata = Dadata(key)
+        result = dadata.suggest("address", address, language=language)
+        return [r['unrestricted_value'] for r in result]
+    except Exception as e:
+        pass
+    finally: return []
 
 def get_coordinates(key:str, address:str, language:str)->list:
     dadata = Dadata(key)
