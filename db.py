@@ -38,8 +38,8 @@ class DBClient:
         self.cursor.execute(command)
         self.connect.commit()
 
-if __name__ == '__main__':
-    dbclient = DBClient()
-    settings = {'url': 'https://dadata.ru/api/', 'key': '123', 'language': 'ru'}
-    dbclient.save_settings(settings)
-    print(dbclient.get_settings())
+# if __name__ == '__main__':
+#     dbclient = DBClient()
+#     settings = {'url': 'https://dadata.ru/api/', 'key': '123', 'language': 'ru'}
+#     dbclient.save_settings(settings)
+#     print(dbclient.get_settings())
