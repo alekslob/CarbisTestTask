@@ -20,27 +20,37 @@ class Client:
             print("Введите 'выход' для завершения")
             enter = input("")
             if enter == "выход":
-                break
+                return
             if enter == "настройки":
                 print("изменение настроек")
                 self.settings = self.null_settings()
             if enter == "адресс":
                 print("новый запрос")
-                addres = input("Адресс: ")
-                list_adress = get_adress(key=self.settings['key'], address=addres,language=self.settings['language'])
-                if len(list_adress) > 0:
-                    for l in range(len(list_adress)):
-                        print(f"{l+1} {list_adress[l]}")
-                    num_addres = input("Введите номер адреса или введите 'выйти', если нет нужного: ")
-                    while num_addres=='':
-                        print("Значение не может быть пустым.")
-                        num_addres = input("Введите номер адреса или введите 'выйти', если нет нужного: ")
-                    if num_addres == 'выйти':
-                        continue
-                    result = get_coordinates(key=self.settings['key'], address=list_adress[int(num_addres)-1],language=self.settings['language'])
-                    print(f"Широта: {result[0]}\nДолгота: {result[1]}")
+                self.get_exact_location()
                 input("нажмите enter")
         pass
+    def get_exact_location(self):
+        addres = input("Адресс: ")
+        list_adress = get_adress(key=self.settings['key'], address=addres,language=self.settings['language'])
+        if len(list_adress) > 0:
+            for l in range(len(list_adress)):
+                print(f"{l+1} {list_adress[l]}")
+
+            while True:
+                num_addres = input("Введите номер адреса или введите 'выйти', если нет нужного: ")
+                try:
+                    if num_addres == 'выйти': return
+                    if num_addres == '': raise NameError("Значение не может быть пустым")
+                    val = int(num_addres)
+                    if val <1 or val >len(list_adress) : raise ValueError()
+                    break
+                except NameError as n:
+                    print(n)
+                except ValueError:
+                    print(f"Значение может быть от 1 до {len(list_adress)}")
+            result = get_coordinates(key=self.settings['key'], address=list_adress[int(num_addres)-1],language=self.settings['language'])
+            print(f"Широта: {result[0]}\nДолгота: {result[1]}")
+
     def show_settings(self):
         print("\nТекущие настройки:")
         print(f"URL: {self.settings['url']}")
