@@ -10,6 +10,7 @@ class Client:
         self.dbclient = DBClient(dbname)
         print("Получение настроек")
         self.settings = self.dbclient.get_settings(self.null_settings())
+        self.work()
 
     def work(self):
         while True:
@@ -22,15 +23,14 @@ class Client:
             if enter == "выход":
                 return
             if enter == "настройки":
-                print("изменение настроек")
+                print("Изменение настроек:")
                 self.settings = self.null_settings()
             if enter == "адресс":
-                print("новый запрос")
                 self.get_exact_location()
-                input("нажмите enter")
+                input("Нажмите Enter")
         pass
     def get_exact_location(self):
-        addres = input("Адресс: ")
+        addres = input("Введите адресс: ")
         list_adress = get_adress(key=self.settings['key'], address=addres,language=self.settings['language'])
         if len(list_adress) > 0:
             for l in range(len(list_adress)):
@@ -62,18 +62,20 @@ class Client:
     def change_settings(self):
         if self.settings['url'] is None:
             print("\nОтсутствует URL")
+            print(f"Введите новое значение URL или пустую строку, чтобы установить значение {default_url}")
             url = input("URL: ")
             if url=='': url=default_url
             self.settings["url"] = url
         if self.settings.get("key") is None:
             print("\nОтсутствует API")
-            key = input("Ключ:")
-            while key=='':
-                print("пусто")
-                key = input("Ключ:")
+            while True:
+                key = input("Введите новое значение ключа:")
+                if key != '': break
+                print("Значение не может быть пустым.")
             self.settings["key"] = key
         if self.settings.get("language") is None:
-            language = input("Язык: ")
+            print(f"\nВведите язык для ответа (en/ru) или пустую строку, чтобы установить значение {default_language}")
+            language = input("Язык получаемых данных: ")
             if language == '': language=default_language
             if language != 'ru' and language != 'en': language=default_language
             self.settings["language"] = language
@@ -81,4 +83,3 @@ class Client:
 
 if __name__ == "__main__":
     client = Client()
-    client.work()
