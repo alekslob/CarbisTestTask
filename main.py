@@ -16,7 +16,7 @@ class Client:
         while True:
             self.change_settings()
             self.show_settings()
-            print("\nВведите 'адресс' для нового запроса")
+            print("\nВведите 'адрес' для нового запроса")
             print("Введите 'настройки' для изменения настроек")
             print("Введите 'выход' для завершения")
             enter = input("")
@@ -25,12 +25,12 @@ class Client:
             if enter == "настройки":
                 print("Изменение настроек:")
                 self.settings = self.null_settings()
-            if enter == "адресс":
+            if enter == "адрес":
                 self.get_exact_location()
                 input("Нажмите Enter")
         pass
     def get_exact_location(self):
-        addres = input("Введите адресс: ")
+        addres = input("Введите адрес: ")
         list_adress = get_adress(key=self.settings['key'], address=addres,language=self.settings['language'])
         if len(list_adress) > 0:
             for l in range(len(list_adress)):
