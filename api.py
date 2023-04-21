@@ -1,22 +1,31 @@
 from dadata import Dadata
+from dataclasses import dataclass
+from typing import List
 
-def get_adress(key:str, address:str, language:str)->list:
-    result = []
-    try:
-        dadata = Dadata(key)
-        result = dadata.suggest("address", address, language=language)
-        result = [r['unrestricted_value'] for r in result]
-    except Exception as e:
-        pass
-    finally: return result
+@dataclass
+class APIData:
+    url: str = "https://dadata.ru/api/"
+    key: str = ''
+    language: str = 'ru'
 
-def get_coordinates(key:str, address:str, language:str)->list:
-    dadata = Dadata(key)
-    result = dadata.suggest("address", address, language=language,count=1)
-    result=result[0]
-    return [result['data']['geo_lat'], result['data']['geo_lon']]
+class APIConnect:
+    def __init__(self, key:str, language:str) -> None:
+        self._key = key
+        self._language = language
+    def get_adress(self, address:str)->list:
+        try:
+            dadata = Dadata(self._key)
+            result = dadata.suggest("address", address, language=self._language)
+            result = [r['unrestricted_value'] for r in result]
+            return result
+        except:
+            raise
 
-# if __name__ == '__main__':
-#     token = input("token: ")
-#     query = input("address: ")
-#     print(get_coordinates(token, query, 'ru'))
+    def get_coordinates(self, address:str)->list:
+        try:
+            dadata = Dadata(self._key)
+            result = dadata.suggest("address", address, language=self._language,count=1)
+            result=result[0]
+            return [result['data']['geo_lat'], result['data']['geo_lon']]
+        except:
+            raise
