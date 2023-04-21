@@ -78,7 +78,7 @@ def get_settings():
 if __name__ == "__main__":
     client = Client()
     meny = ChoiceState(title='Начало',
-                       states=[FunctionState(title='адрес', func=get_settings),
+                       states=[FunctionState(title='адрес', func=client.get_adress),
                                ChoiceState(title='настройки', states=[
                                     FunctionState(title='Показать текущие', func=client.show_settings),
                                     FunctionState(title='Изменить url', func=client.change_url),

@@ -15,7 +15,8 @@ class Client:
         print("Текущие настройки\n")
         print(f"{self._settings.url}:{self._settings.key} {self._settings.language}")
         input(">> ")
-
+    def get_adress():
+        ...
     def change_url(self):
         print("Введите новый url или 0 для отмены")
         try:
@@ -35,7 +36,7 @@ class Client:
                 self._settings.key = key
         except ValueError:
             self.change_url()
-            
+
     def change_language(self):
         print("Введите язык или 0 для отмены")
         try:
