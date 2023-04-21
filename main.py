@@ -1,85 +1,94 @@
-from db import DBClient
-from api import get_adress, get_coordinates
-default_url = "https://dadata.ru/api/"
-default_language = "ru"
-default_dbname = "db.settings"
+from abc import ABC, abstractmethod
+from typing import List
+import os
+from client import Client
 
-class Client:
-    def __init__(self, dbname:str=default_dbname) -> None:
-        print("Подключение к базе данных")
-        self.dbclient = DBClient(dbname)
-        print("Получение настроек")
-        self.settings = self.dbclient.get_settings(self.null_settings())
-        self.work()
+class Context:
+    _state = None
 
+    def __init__(self, state: 'IState') -> None:
+        self.set_state(state)
+    
+    def set_state(self, state: 'IState'):
+        self._state = state
+        self._state.context = self
+    
     def work(self):
-        while True:
-            self.change_settings()
-            self.show_settings()
-            print("\nВведите 'адрес' для нового запроса")
-            print("Введите 'настройки' для изменения настроек")
-            print("Введите 'выход' для завершения")
-            enter = input("")
-            if enter == "выход":
-                return
-            if enter == "настройки":
-                print("Изменение настроек:")
-                self.settings = self.null_settings()
-            if enter == "адрес":
-                self.get_exact_location()
-                input("Нажмите Enter")
-        pass
-    def get_exact_location(self):
-        addres = input("Введите адрес: ")
-        list_adress = get_adress(key=self.settings['key'], address=addres,language=self.settings['language'])
-        if len(list_adress) > 0:
-            for l in range(len(list_adress)):
-                print(f"{l+1} {list_adress[l]}")
+        self._state.work()
 
-            while True:
-                num_addres = input("Введите номер адреса или введите 'выйти', если нет нужного: ")
-                try:
-                    if num_addres == 'выйти': return
-                    if num_addres == '': raise NameError("Значение не может быть пустым")
-                    val = int(num_addres)
-                    if val <1 or val >len(list_adress) : raise ValueError()
-                    break
-                except NameError as n:
-                    print(n)
-                except ValueError:
-                    print(f"Значение может быть от 1 до {len(list_adress)}")
-            result = get_coordinates(key=self.settings['key'], address=list_adress[int(num_addres)-1],language=self.settings['language'])
-            print(f"Широта: {result[0]}\nДолгота: {result[1]}")
+class IState(ABC):
+    _back_state:'IState' = None
 
-    def show_settings(self):
-        print("\nТекущие настройки:")
-        print(f"URL: {self.settings['url']}")
-        print(f"Ключ: {self.settings['key']}")
-        print(f"Язык: {self.settings['language']}") 
+    @property
+    def context(self) -> Context:
+        return self._context
+    
+    @context.setter
+    def context(self, context: Context) ->None:
+        self._context = context
+    
+    @property
+    def title(self) -> Context:
+        return self._title
+    
+    @abstractmethod
+    def work(self):
+        ...
 
-    def null_settings(self):
-        return {'url':None, 'key':None, 'language':None}
-    def change_settings(self):
-        if self.settings['url'] is None:
-            print("\nОтсутствует URL")
-            print(f"Введите новое значение URL или пустую строку, чтобы установить значение {default_url}")
-            url = input("URL: ")
-            if url=='': url=default_url
-            self.settings["url"] = url
-        if self.settings.get("key") is None:
-            print("\nОтсутствует API")
-            while True:
-                key = input("Введите новое значение ключа:")
-                if key != '': break
-                print("Значение не может быть пустым.")
-            self.settings["key"] = key
-        if self.settings.get("language") is None:
-            print(f"\nВведите язык для ответа (en/ru) или пустую строку, чтобы установить значение {default_language}")
-            language = input("Язык получаемых данных: ")
-            if language == '': language=default_language
-            if language != 'ru' and language != 'en': language=default_language
-            self.settings["language"] = language
-        self.dbclient.save_settings(self.settings)
+class FunctionState(IState):
+    def __init__(self, title:str, func = None) -> None:
+        self._title = title
+        self._func = func
+    def work(self):
+        try:
+            os.system('cls')
+            self._func()
+        finally:
+            self.context.set_state(self._back_state)
+            self.context.work()
+
+class ChoiceState(IState):
+    def __init__(self, title:str, states:List['IState'] = []) -> None:
+        self._title = title
+        self._states = states
+        for state in self._states:
+            state._back_state = self
+        
+    def work(self):
+        os.system('cls')
+        print(f'==={self._title}===')
+        for i, state in enumerate(self._states, start=1):
+            print(f"{i}. {state.title}")
+        try:
+            choice = int(input('>> '))
+            if choice > 0 and choice <= len(self._states):
+                self.context.set_state(self._states[choice-1])
+                self.context.work()
+            else: raise ValueError()
+        # except ValueError:
+        #     self.work()
+        except:
+            return
+
+
+def get_settings():
+    print('блаблабла')
+    input('>> ')
 
 if __name__ == "__main__":
     client = Client()
+    meny = ChoiceState(title='Начало',
+                       states=[FunctionState(title='адрес', func=get_settings),
+                               ChoiceState(title='настройки', states=[
+                                    FunctionState(title='Показать текущие', func=client.show_settings),
+                                    FunctionState(title='Изменить url', func=client.change_url),
+                                    FunctionState(title='Изменить token', func=client.change_key),
+                                    FunctionState(title='Изменить язык', func=client.change_language),
+                                    FunctionState(title='Назад',)# lambda back_state: back_state.back_state )
+                               ]),
+                               FunctionState(title='Выход', func=client.save_changes)]
+                       )
+
+    
+    context = Context(meny)
+    context.work()

@@ -12,7 +12,7 @@ class APIConnect:
     def __init__(self, key:str, language:str) -> None:
         self._key = key
         self._language = language
-    def get_adress(self, address:str)->list:
+    def get_adress(self, address:str, )->list:
         try:
             dadata = Dadata(self._key)
             result = dadata.suggest("address", address, language=self._language)

@@ -13,15 +13,12 @@ class DBClient:
         # таблицы не существует
         self.cursor.execute("select count(id) from settings;")
         response = self.cursor.fetchall()
-        if response[0][0] == 0: self.__create_lens()
+        if response[0][0] == 0: self.save_settings(APIData())
         # записей не существует
 
     def __create_db(self) -> None:
         prepare_command = "create table if not exists settings (id int primary key, url varchar(255), key varchar(50), language varchar(2));"
         self.cursor.execute(prepare_command)
-
-    def __create_lens(self) -> None:
-        self.save_settings(APIData())
 
     def get_settings(self) -> APIData:
         settings = APIData()
