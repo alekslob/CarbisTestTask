@@ -40,6 +40,6 @@ class DBClient:
         url = settings.url
         key = settings.key
         language = settings.language
-        command = f"insert or replace into settings (id, url, key, language) values (1, %s,%s,%s);"
+        command = f"insert or replace into settings (id, url, key, language) values (1, ?,?,?);"
         self.cursor.execute(command, (url,key,language))
         self.connect.commit()

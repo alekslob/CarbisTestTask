@@ -1,9 +1,11 @@
 from db import DBClient
+from api import APIConnect, Suggest
+from typing import Tuple
 # from api import get_adress, get_coordinates
 # default_url = "https://dadata.ru/api/"
 # default_language = "ru"
-default_dbname = "db.settings"
-
+default_dbname = "settings.db"
+import os
 class Client:
     def __init__(self, dbname:str=default_dbname) -> None:
         print("Подключение к базе данных")
@@ -15,34 +17,43 @@ class Client:
         print("Текущие настройки\n")
         print(f"{self._settings.url}:{self._settings.key} {self._settings.language}")
         input(">> ")
-    def get_adress():
-        ...
+
+    def get_adress(self, suggest) -> Tuple[Suggest]:
+        api = APIConnect(key = self._settings.key, language=self._settings.language)
+        try:
+            list_adresses = api.get_adress(suggest)
+            if len(list_adresses) == 0:
+                raise ValueError('Нет результатов по данному запросу')
+            return list_adresses
+        except:
+            raise
+
     def change_url(self):
-        print("Введите новый url или 0 для отмены")
+        print("Введите новый url или enther для отмены")
         try:
             url = input(">> ")
-            if url == '': raise ValueError
-            if url != '0':
+            # if url == '': raise ValueError
+            if url != '':
                 self._settings.url = url
         except ValueError:
             self.change_url()
             
     def change_key(self):
-        print("Введите новый ключ или 0 для отмены")
+        print("Введите новый ключ или enther для отмены")
         try:
             key = input(">> ")
-            if key == '': raise ValueError
-            if key != '0':
+            # if key == '': raise ValueError
+            if key != '':
                 self._settings.key = key
         except ValueError:
             self.change_url()
 
     def change_language(self):
-        print("Введите язык или 0 для отмены")
+        print("Введите язык или enther для отмены")
         try:
             language = input(">> ")
-            if language == '': raise ValueError
-            if language !='0':
+            # if language == '': raise ValueError
+            if language !='':
                 self._settings.language = language
         except ValueError:
             self.change_url()
