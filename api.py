@@ -2,12 +2,6 @@ from dadata import Dadata
 from dataclasses import dataclass
 from typing import Tuple
 
-# @dataclass
-# class APIData:
-#     url: str = "https://dadata.ru/api/"
-#     key: str = ''
-#     language: str = 'ru'
-
 @dataclass
 class Suggest:
     adress: str

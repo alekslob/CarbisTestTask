@@ -1,5 +1,11 @@
 import sqlite3
-from api import APIData
+from dataclasses import dataclass
+
+@dataclass
+class APIData:
+    url: str = "https://dadata.ru/api/"
+    key: str = ''
+    language: str = 'ru'
 
 class DBClient:
     def __init__(self, dbname:str="settings.db") -> None:
@@ -34,6 +40,6 @@ class DBClient:
         url = settings.url
         key = settings.key
         language = settings.language
-        command = f"insert or replace into settings (id, url, key, language) values (1, '{url}', '{key}', '{language}');"
-        self.cursor.execute(command)
+        command = f"insert or replace into settings (id, url, key, language) values (1, %s,%s,%s);"
+        self.cursor.execute(command, (url,key,language))
         self.connect.commit()
