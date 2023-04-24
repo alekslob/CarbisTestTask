@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Tuple
+from typing import Tuple, List
 import os
 from client import Client
 from api import Suggest

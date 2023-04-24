@@ -17,17 +17,8 @@ class APIConnect:
         try:
             dadata = Dadata(self._key)
             result = dadata.suggest("address", address, language=self._language)
-            # result = [r['unrestricted_value'] for r in result]
-            # return result
+
             return [Suggest(r['unrestricted_value'], r['data']['geo_lat'], r['data']['geo_lon']) for r in result]
         except:
             raise
 
-    # def get_coordinates(self, address:str)->list:
-    #     try:
-    #         dadata = Dadata(self._key)
-    #         result = dadata.suggest("address", address, language=self._language,count=1)
-    #         result=result[0]
-    #         return [result['data']['geo_lat'], result['data']['geo_lon']]
-    #     except:
-    #         raise

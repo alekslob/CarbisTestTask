@@ -1,11 +1,8 @@
 from db import DBClient
 from api import APIConnect, Suggest
 from typing import Tuple
-# from api import get_adress, get_coordinates
-# default_url = "https://dadata.ru/api/"
-# default_language = "ru"
 default_dbname = "settings.db"
-import os
+
 class Client:
     def __init__(self, dbname:str=default_dbname) -> None:
         print("Подключение к базе данных")
